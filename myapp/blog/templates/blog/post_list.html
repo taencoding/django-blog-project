@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>post list</h1>
+    <a href="{% url 'blog:write' %}" class="btn btn-primary">글 작성</a>
+
+    {% if posts %}
+    <table class="table table-boardered">
+        <thead class="table-light">
+            <tr>
+                <td>제목</td>
+                <td>내용</td>
+                <td>작성자</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for post in posts %}
+            <tr>
+                <td><a href="{% url 'post_detail.html">{{ post.title }}</a></td>
+                <td>{{ post.content }}</td>
+                <td>{{ post.writer }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p>작성된 게시물이 없습니다.</p>
+    {% endif %}
+
+{% endblock %}

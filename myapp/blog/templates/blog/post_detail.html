@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>제목: {{ post.title }}</h2>
+<p>내용: {{ post.content }}</p>
+<p>작성시간 : {{ post.created_at }}</p>
+<!-- <p>수정시간 : {{ post.updated_at }}</p> -->
+{% endblock %}
