@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from .models import Post
 from .forms import PostForm
@@ -41,17 +41,48 @@ class Write(View):
 
 
 
-class DetailView(View):
-    model = Post
-    context_object_name = 'post'
+class Detail(View):
+    def get(self, request, pk):
+        post = Post.objects.get(pk=pk)
+
+        context = {
+            'post_id': pk,
+            'post_title': post.title,
+            'post_writer': post.writer,
+            'post_content': post.content,
+            'post_created_at': post.created_at,
+        }
+        return render(request, 'blog/post_detail.html', context)
 
 
-class PostUpdateView(UpdateView):
-    model = Post
-    context_object_name = 'post_update'
-    form_class = PostForm
-    success_url = reverse_lazy('blog:list')
+class Update(View):
+    def get(self, request, pk):
+        post = Post.objects.get(pk=pk)
+        form = PostForm(initial={'title': post.title, 'content': post.content})
+        context = {
+            'form': form,
+            'post': post,
+        }
+        return render(request, 'blog/post_edit.html', context)
+    
+    def post(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
+        form = PostForm(request.POST)
+
+        if form.is_valid():
+            post.title = form.cleaned_data['title']
+            post.content = form.cleaned_data['content']
+            post.save()
+            return redirect('blog:detail', pk=pk)
+        
+        # context = {
+        #     'form': form
+        # }
+        # return render(request, 'blog/post_edit.html', context)
 
 
-class PostDeleteView(DeleteView):
-    model = Post
+class Delete(DeleteView):
+    def post(self, request, pk):
+        post = Post.objects.get(pk=pk)
+        post.delete()
+        return redirect('blog:list')

@@ -1,12 +1,12 @@
 from django.urls import path
-from blog.views import PostList, Write, DetailView, PostUpdateView, PostDeleteView
+from . import views
 
 app_name = 'blog'
 
 urlpatterns = [
-    path('', PostList.as_view(), name='list'),
-    path('write/', Write.as_view(), name='write'),
-    path('<int:pk>/', DetailView.as_view(), name='detail'),
-    path('update/<int:pk>', PostUpdateView.as_view(), name='update'),
-    path('delete/<int:pk>', PostDeleteView.as_view(), name='delete'),
+    path("", views.PostList.as_view(), name='list'),
+    path("write/", views.Write.as_view(), name='write'),
+    path("detail/<int:pk>/", views.Detail.as_view(), name='detail'),
+    path("edit/<int:pk>/", views.Update.as_view(), name='edit'),
+    path("delete/<int:pk>/", views.Delete.as_view(), name='delete'),
 ]
