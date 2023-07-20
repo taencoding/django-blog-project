@@ -29,8 +29,8 @@ class Write(LoginRequiredMixin, View):
         return render(request, 'blog/post_form.html', context)
     
     def post(self, request):
-        form = PostForm(request.POST)
-
+        form = PostForm(request.POST, request.FILES)
+        
         if form.is_valid():
             post = form.save(commit=False)
             post.writer = request.user
@@ -41,7 +41,6 @@ class Write(LoginRequiredMixin, View):
             'form': form
         }
         return render(request, 'blog/post_form.html', context)
-
 
 
 class Detail(View):
@@ -55,6 +54,7 @@ class Detail(View):
             'post_content': post.content,
             'post_category': post.category,
             'post_created_at': post.created_at,
+            'post_image': post.image,
         }
         return render(request, 'blog/post_detail.html', context)
 
@@ -62,7 +62,7 @@ class Detail(View):
 class Update(View):
     def get(self, request, pk):
         post = Post.objects.get(pk=pk)
-        form = PostForm(initial={'title': post.title, 'content': post.content})
+        form = PostForm(initial={'title': post.title, 'content': post.content, 'category': post.category, 'image': post.image})
         context = {
             'form': form,
             'post': post,
@@ -71,11 +71,12 @@ class Update(View):
     
     def post(self, request, pk):
         post = get_object_or_404(Post, pk=pk)
-        form = PostForm(request.POST)
-
+        form = PostForm(request.POST, request.FILES) # , request.FILES
         if form.is_valid():
             post.title = form.cleaned_data['title']
             post.content = form.cleaned_data['content']
+            post.category = form.cleaned_data['category']
+            post.image = form.cleaned_data['image']
             post.save()
             return redirect('blog:detail', pk=pk)
         
