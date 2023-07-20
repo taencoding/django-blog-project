@@ -53,6 +53,7 @@ class Detail(View):
             'post_title': post.title,
             'post_writer': post.writer,
             'post_content': post.content,
+            'post_category': post.category,
             'post_created_at': post.created_at,
         }
         return render(request, 'blog/post_detail.html', context)

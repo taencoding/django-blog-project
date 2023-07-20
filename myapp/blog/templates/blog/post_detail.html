@@ -5,6 +5,7 @@
 <h2>제목: {{ post_title }}</h2>
 <p>작성자: {{ post_writer }}</p>
 <p>내용: {{ post_content }}</p>
+<p>카테고리: {{ post_category }}</p>
 <p>작성시간 : {{ post_created_at }}</p>
 <!-- <p>수정시간 : {{ post.updated_at }}</p> -->
 {% if post_writer == request.user %}
