@@ -3,7 +3,9 @@ from django.views import View
 from .models import Post
 from .forms import PostForm
 from django.urls import reverse_lazy
-from django.views.generic import UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponse
+
 
 # Create your views here.
 class PostList(View):
@@ -16,7 +18,7 @@ class PostList(View):
         return render(request, 'blog/post_list.html', context)
 
 
-class Write(View):
+class Write(LoginRequiredMixin, View):
     def get(self, request):
         form = PostForm()
         context = {
@@ -79,10 +81,22 @@ class Update(View):
         #     'form': form
         # }
         # return render(request, 'blog/post_edit.html', context)
+        
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
 
-class Delete(DeleteView):
+class Delete(View):
     def post(self, request, pk):
-        post = Post.objects.get(pk=pk)
+        post = get_object_or_404(Post, pk=pk)
+        post.delete()
+        return redirect('blog:list')
+    
+    def get(self, request, pk):
+        try:
+            post = Post.objects.get(pk=pk)
+        except Post.DoesNotExist:
+            # return render(request, 'blog/error.html')
+            return HttpResponse("<h1>존재하지 않는 게시글입니다</h1>")
+        
         post.delete()
         return redirect('blog:list')
