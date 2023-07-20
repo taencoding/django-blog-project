@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
-from .models import Post
+from .models import Post, Category
 from .forms import PostForm
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -95,7 +95,6 @@ class Delete(View):
         try:
             post = Post.objects.get(pk=pk)
         except Post.DoesNotExist:
-            # return render(request, 'blog/error.html')
             return HttpResponse("<h1>존재하지 않는 게시글입니다</h1>")
         
         post.delete()
