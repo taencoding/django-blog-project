@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
-from .models import Post, Category
+# from .models import Post, Category
+from .models import Post
 from .forms import PostForm
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -81,8 +82,6 @@ class Update(View):
         #     'form': form
         # }
         # return render(request, 'blog/post_edit.html', context)
-        
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
 
 class Delete(View):
@@ -99,3 +98,19 @@ class Delete(View):
         
         post.delete()
         return redirect('blog:list')
+    
+
+class Search(View):
+    def get(self, request):
+        category = request.GET.get('category')
+        sort_by = request.GET.get('sort_by', 'created_at')
+
+        if category:
+            posts = Post.objects.filter(category=category).order_by(sort_by)
+        else:
+            posts = Post.objects.all().order_by(sort_by)
+
+        context = {
+            'posts': posts,
+        }
+        return render(request, 'blog/post_list.html', context)

@@ -3,6 +3,16 @@
 {% block content %}
 <h1>post list</h1>
     <a href="{% url 'blog:write' %}" class="btn btn-primary">글 작성</a>
+    
+    <form action="{% url 'blog:search' %}" method="GET">
+        <input type="text" name="category" placeholder="카테고리를 입력하세요">
+        <select name="sort_by">
+            <option value="-created_at">최신순</option>
+            <option value="created_at">과거순</option>
+        </select>
+        <button type="submit">검색</button>
+    </form>
+
 
     {% if posts %}
     <table class="table table-boardered">
@@ -12,6 +22,7 @@
                 <td>내용</td>
                 <td>카테고리</td>
                 <td>작성자</td>
+                <td>작성일</td>
             </tr>
         </thead>
         <tbody>
@@ -21,6 +32,7 @@
                 <td>{{ post.content }}</td>
                 <td>{{ post.category }}</td>
                 <td>{{ post.writer }}</td>
+                <td>{{ post.created_at }}</td>
             </tr>
             {% endfor %}
         </tbody>
