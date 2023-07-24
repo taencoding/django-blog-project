@@ -38,3 +38,13 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.content
+    
+
+class Recomment(models.Model):
+    comment = models.ForeignKey('Comment', on_delete=models.CASCADE)
+    writer = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.content
