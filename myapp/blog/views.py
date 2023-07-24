@@ -154,3 +154,12 @@ class CommentWrite(LoginRequiredMixin ,View):
             'cm_form': form,
         }
         return render(request, 'blog/post_detail.html', context)
+    
+
+class CommentDelete(View):
+    def post(self, requset, pk):
+        comment = Comment.objects.get(pk=pk)
+        post_id = comment.post.id
+        comment.delete()
+
+        return redirect('blog:detail', pk=post_id)

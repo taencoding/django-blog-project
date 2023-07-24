@@ -23,7 +23,7 @@
     </form>
     {% endif %}
 
-    
+    <!-- 댓글 작성 -->
     <h3>Comment</h3>
     <form action="{% url 'blog:cm-write' pk=post_id %}" method="post">
         {% csrf_token %}
@@ -35,6 +35,12 @@
     {% if comments %}
         {% for comment in comments %}
             <li>{{ comment.content }}</li>
+            {% if comment.writer == request.user %}
+                <form action="{% url 'blog:cm-delete' pk=comment.pk %}" method='post'>
+                    {% csrf_token %}
+                    <input type="submit" value="X" class="btn">
+                </form>
+            {% endif %}
         {% endfor%}
     </ul>
     {% else %}
