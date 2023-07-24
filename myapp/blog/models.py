@@ -28,3 +28,13 @@ class Post(models.Model):
     
     # def get_content_under(self):
     #     return self.content[:300]
+
+
+class Comment(models.Model):
+    post = models.ForeignKey('Post', on_delete=models.CASCADE)
+    writer = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.content

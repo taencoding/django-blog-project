@@ -23,5 +23,23 @@
     </form>
     {% endif %}
 
+    
+    <h3>Comment</h3>
+    <form action="{% url 'blog:cm-write' pk=post_id %}" method="post">
+        {% csrf_token %}
+        {{ cm_form.content }}
+        <input type="submit" value="Submit">
+    </form>
+
+    <ul>
+    {% if comments %}
+        {% for comment in comments %}
+            <li>{{ comment.content }}</li>
+        {% endfor%}
+    </ul>
+    {% else %}
+        <p>There is no comment</p>
+    {% endif %}
+
 
 {% endblock %}

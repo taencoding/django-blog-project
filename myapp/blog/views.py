@@ -1,11 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 # from .models import Post, Category
-from .models import Post
-from .forms import PostForm
+from .models import Post, Comment
+from .forms import PostForm, CommentForm
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
+
 
 
 # Create your views here.
@@ -45,10 +47,13 @@ class Write(LoginRequiredMixin, View):
 
 class Detail(View):
     def get(self, request, pk):
-        post = Post.objects.get(pk=pk)
+        # post = Post.objects.get(pk=pk)
+        post = Post.objects.prefetch_related('comment_set').get(pk=pk)
+        comments = post.comment_set.all()
+        cm_form = CommentForm()
+
         if post.writer != request.user:
-            default_view_count = post.view_count
-            post.view_count = default_view_count + 1
+            post.view_count = post.view_count + 1
             post.save()
 
         context = {
@@ -60,6 +65,8 @@ class Detail(View):
             'post_created_at': post.created_at,
             'post_image': post.image,
             'view_count': post.view_count,
+            'comments': comments,
+            'cm_form': cm_form,
         }
         return render(request, 'blog/post_detail.html', context)
 
@@ -121,3 +128,29 @@ class Search(View):
             'posts': posts,
         }
         return render(request, 'blog/post_list.html', context)
+
+
+class CommentWrite(LoginRequiredMixin ,View):
+    def post(self, request, pk):
+        form = CommentForm(request.POST)
+        post = Post.objects.get(pk=pk)
+
+        if form.is_valid():
+            content = form.cleaned_data['content']
+            writer = request.user
+
+            try:
+                comment = Comment.objects.create(post=post, content=content, writer=writer)
+                return redirect('blog:detail', pk=pk)
+            except ObjectDoesNotExist as e:
+                print('Post does not exits', str(e))
+            except ValidationError as e:
+                print('Validation error occurred', str(e))
+            return redirect('blog:detail', pk=pk)    
+
+        context = {
+            'post_id': pk,
+            'comments': post.comment_set.all(),
+            'cm_form': form,
+        }
+        return render(request, 'blog/post_detail.html', context)
