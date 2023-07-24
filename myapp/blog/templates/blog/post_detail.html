@@ -28,17 +28,34 @@
     <form action="{% url 'blog:cm-write' pk=post_id %}" method="post">
         {% csrf_token %}
         {{ cm_form.content }}
-        <input type="submit" value="Submit">
+        <input type="submit" value="댓글 작성">
     </form>
 
+    <!-- 댓글 -->
     <ul>
     {% if comments %}
         {% for comment in comments %}
-            <li>{{ comment.content }}</li>
+            <li>댓글: {{ comment.content }} ({{ comment.writer }}) / {{ commment.created_at }}</li>
             {% if comment.writer == request.user %}
-                <form action="{% url 'blog:cm-delete' pk=comment.pk %}" method='post'>
+                <form action="{% url 'blog:cm-delete' cm_id=comment.pk %}" method='post'>
                     {% csrf_token %}
                     <input type="submit" value="X" class="btn">
+                </form>
+                <!-- 답글 -->
+                <ul>
+                    {% if recomments %}
+                        {% for recomment in recomments %}
+                            {% if recomment.comment == comment %}
+                            <li>답글: {{ recomment.content }} ({{ recomment.writer }}) / {{ recomment.created_at }}</li>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </ul>
+                <!-- 답글 작성 -->
+                <form action="{% url 'blog:rcm-write' pk=post_id cm_id=comment.pk %}" method="post">
+                    {% csrf_token %}
+                    {{ rm_form.content }}
+                    <input type="submit" value="답글 작성">
                 </form>
             {% endif %}
         {% endfor%}

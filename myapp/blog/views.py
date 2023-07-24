@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 # from .models import Post, Category
-from .models import Post, Comment
-from .forms import PostForm, CommentForm
+from .models import Post, Comment, ReComment
+from .forms import PostForm, CommentForm, ReCommentFrom
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
@@ -51,6 +51,13 @@ class Detail(View):
         post = Post.objects.prefetch_related('comment_set').get(pk=pk)
         comments = post.comment_set.all()
         cm_form = CommentForm()
+        
+
+        recomments = []
+        for comment in comments:
+            recomment = ReComment.objects.filter(comment=comment.pk)
+            recomments += recomment
+        rm_form = ReCommentFrom()
 
         if post.writer != request.user:
             post.view_count = post.view_count + 1
@@ -67,6 +74,8 @@ class Detail(View):
             'view_count': post.view_count,
             'comments': comments,
             'cm_form': cm_form,
+            'recomments': recomments,
+            'rm_form': rm_form,
         }
         return render(request, 'blog/post_detail.html', context)
 
@@ -148,18 +157,40 @@ class CommentWrite(LoginRequiredMixin ,View):
                 print('Validation error occurred', str(e))
             return redirect('blog:detail', pk=pk)    
 
-        context = {
-            'post_id': pk,
-            'comments': post.comment_set.all(),
-            'cm_form': form,
-        }
-        return render(request, 'blog/post_detail.html', context)
+        # context = {
+        #     'post_id': pk,
+        #     'comments': post.comment_set.all(),
+        #     'cm_form': form,
+        # }
+        # return render(request, 'blog/post_detail.html', context)
+        return redirect('blog:detail', pk=pk)
     
 
 class CommentDelete(View):
-    def post(self, requset, pk):
-        comment = Comment.objects.get(pk=pk)
+    def post(self, requset, cm_id):
+        comment = Comment.objects.get(pk=cm_id)
         post_id = comment.post.id
         comment.delete()
 
         return redirect('blog:detail', pk=post_id)
+    
+
+class ReCommentWrite(LoginRequiredMixin, View):
+    def post(self, request, pk, cm_id): # post_id
+        form = ReCommentFrom(request.POST)
+        comment = Comment.objects.get(pk=cm_id)
+        writer = request.user
+
+        if form.is_valid():
+            content = form.cleaned_data['content']
+
+            try:
+                recomment = ReComment.objects.create(comment=comment, content=content, writer=writer)
+                return redirect('blog:detail', pk=pk)
+            except ObjectDoesNotExist as e:
+                print('Post does not exits', str(e))
+            except ValidationError as e:
+                print('Validation error occurred', str(e))
+            return redirect('blog:detail', pk=pk) 
+        
+        return redirect('blog:detail', pk=pk)

@@ -40,7 +40,7 @@ class Comment(models.Model):
         return self.content
     
 
-class Recomment(models.Model):
+class ReComment(models.Model):
     comment = models.ForeignKey('Comment', on_delete=models.CASCADE)
     writer = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
