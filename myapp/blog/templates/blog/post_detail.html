@@ -7,6 +7,7 @@
     <p>내용: {{ post_content }}</p>
     <p>카테고리: {{ post_category }}</p>
     <p>작성시간 : {{ post_created_at }}</p>
+    <p>조회수: {{ view_count }}</p>
     {% if post_image %}
         <div>
             <img src="{{ post_image.url }}" alt="">

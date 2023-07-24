@@ -21,6 +21,7 @@ class Post(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     category = models.CharField(max_length=50, verbose_name="카테고리")
     image = models.ImageField(blank=True) # upload_to='media/'
+    view_count = models.IntegerField(default=0)
 
     # def is_content_more300(self):
     #     return len(self.content) > 300

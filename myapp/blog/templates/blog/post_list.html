@@ -22,6 +22,7 @@
                 <td>내용</td>
                 <td>카테고리</td>
                 <td>작성자</td>
+                <td>조회수</td>
                 <td>작성일</td>
             </tr>
         </thead>
@@ -32,6 +33,7 @@
                 <td>{{ post.content }}</td>
                 <td>{{ post.category }}</td>
                 <td>{{ post.writer }}</td>
+                <td>{{ post.view_count }}</td>
                 <td>{{ post.created_at }}</td>
             </tr>
             {% endfor %}

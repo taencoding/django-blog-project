@@ -46,6 +46,10 @@ class Write(LoginRequiredMixin, View):
 class Detail(View):
     def get(self, request, pk):
         post = Post.objects.get(pk=pk)
+        if post.writer != request.user:
+            default_view_count = post.view_count
+            post.view_count = default_view_count + 1
+            post.save()
 
         context = {
             'post_id': pk,
@@ -55,6 +59,7 @@ class Detail(View):
             'post_category': post.category,
             'post_created_at': post.created_at,
             'post_image': post.image,
+            'view_count': post.view_count,
         }
         return render(request, 'blog/post_detail.html', context)
 
