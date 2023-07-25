@@ -37,7 +37,7 @@
         {% for comment in comments %}
             <li>댓글: {{ comment.content }} ({{ comment.writer }}) / {{ commment.created_at }}</li>
             {% if comment.writer == request.user %}
-                <form action="{% url 'blog:cm-delete' cm_id=comment.pk %}" method='post'>
+                <form action="{% url 'blog:cm-delete' pk=comment.pk %}" method='post'>
                     {% csrf_token %}
                     <input type="submit" value="X" class="btn">
                 </form>
@@ -46,13 +46,19 @@
                     {% if recomments %}
                         {% for recomment in recomments %}
                             {% if recomment.comment == comment %}
-                            <li>답글: {{ recomment.content }} ({{ recomment.writer }}) / {{ recomment.created_at }}</li>
+                                <li>답글: {{ recomment.content }} ({{ recomment.writer }}) / {{ recomment.created_at }}</li>
+                                {% if recomment.writer == request.user %}
+                                    <form action="{% url 'blog:rcm-delete' pk=recomment.pk %}" method='post'>
+                                        {% csrf_token %}
+                                        <input type="submit" value="X" class="btn">
+                                    </form>
+                                {% endif %}
                             {% endif %}
                         {% endfor %}
                     {% endif %}
                 </ul>
                 <!-- 답글 작성 -->
-                <form action="{% url 'blog:rcm-write' pk=post_id cm_id=comment.pk %}" method="post">
+                <form action="{% url 'blog:rcm-write' pk=comment.pk %}" method="post">
                     {% csrf_token %}
                     {{ rm_form.content }}
                     <input type="submit" value="답글 작성">

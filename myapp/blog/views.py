@@ -47,8 +47,8 @@ class Write(LoginRequiredMixin, View):
 
 class Detail(View):
     def get(self, request, pk):
-        # post = Post.objects.get(pk=pk)
-        post = Post.objects.prefetch_related('comment_set').get(pk=pk)
+        post = Post.objects.get(pk=pk)
+        # post = Post.objects.prefetch_related('comment_set').get(pk=pk)
         comments = post.comment_set.all()
         cm_form = CommentForm()
         
@@ -167,8 +167,8 @@ class CommentWrite(LoginRequiredMixin ,View):
     
 
 class CommentDelete(View):
-    def post(self, requset, cm_id):
-        comment = Comment.objects.get(pk=cm_id)
+    def post(self, requset, pk):
+        comment = Comment.objects.get(pk=pk)
         post_id = comment.post.id
         comment.delete()
 
@@ -176,9 +176,10 @@ class CommentDelete(View):
     
 
 class ReCommentWrite(LoginRequiredMixin, View):
-    def post(self, request, pk, cm_id): # post_id
+    def post(self, request, pk): # post_id
         form = ReCommentFrom(request.POST)
-        comment = Comment.objects.get(pk=cm_id)
+        comment = Comment.objects.get(pk=pk)
+        post_id = comment.post.pk
         writer = request.user
 
         if form.is_valid():
@@ -186,11 +187,22 @@ class ReCommentWrite(LoginRequiredMixin, View):
 
             try:
                 recomment = ReComment.objects.create(comment=comment, content=content, writer=writer)
-                return redirect('blog:detail', pk=pk)
+                return redirect('blog:detail', pk=post_id)
             except ObjectDoesNotExist as e:
                 print('Post does not exits', str(e))
             except ValidationError as e:
                 print('Validation error occurred', str(e))
-            return redirect('blog:detail', pk=pk) 
+            return redirect('blog:detail', pk=post_id) 
         
-        return redirect('blog:detail', pk=pk)
+        return redirect('blog:detail', pk=post_id)
+    
+
+class ReCommentDelete(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        # recomment = ReComment.objects.get(pk=rcm_id)
+        # recomment.delete()
+        recomment = ReComment.objects.get(pk=pk)
+        post_id = recomment.comment.post.pk
+        recomment.delete()
+
+        return redirect('blog:detail', pk=post_id)
