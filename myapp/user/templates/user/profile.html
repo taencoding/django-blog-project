@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<p>email : {{ user.email }}</p>
+<p>nickname : {{ user.nickname }}</p>
+{% if user.profile_image %}
+    <p>gd</p>
+    <img src="{{ user.profile_image.url }}" alt="프로필 이미지" width="200" height="150">
+{% else %}
+    <img src="{% static 'images/hodu.jpg' %}" alt="기본 이미지" width="300" height="300">
+{% endif %}
+
+{% endblock %}

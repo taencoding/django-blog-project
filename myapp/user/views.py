@@ -88,12 +88,10 @@ class PasswordChange(LoginRequiredMixin, View):
         }
         return render(request, 'user/pw_change.html', context)
 
-# class Profile(LoginRequiredMixin, View):
-#     def get(self, reuset, pk):
-#         user = User.objects.get(pk=pk)
-#         form = UserF
-#         return
+class Profile(LoginRequiredMixin, View):
+    def get(self, request): # user_id
+        context = {
+            'user': request.user,
+        }
+        return render(request, 'user/profile.html', context)
     
-#     def post(self, request, pk):
-
-#         return
