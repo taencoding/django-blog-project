@@ -41,16 +41,10 @@ class User(AbstractUser):
     last_login = models.DateTimeField(null=True, blank=True)
     date_joined = models.DateTimeField(auto_now_add=True)
     nickname = models.TextField(max_length=20, null=True, blank=True)
-    profile_image = models.ImageField(upload_to="profile/", default='profile/hodu.jpg')
+    profile_image = models.ImageField(upload_to="profile/", null=True, blank=True)
 
     USERNAME_FIELD = 'email'
     EMAIL_FIELD = 'email'
     REQUIRED_FIELDS = []
 
     objects = UserManager()
-
-
-# class Profile(models.Model):
-#     user = models.OneToOneField('User', on_delete=models.CASCADE)
-#     nickname = models.TextField(max_length=20, null=True, blank=True)
-#     image = models.ImageField(upload_to="profile", default='profile/hodu.jpg')
