@@ -46,3 +46,9 @@ class User(AbstractUser):
     REQUIRED_FIELDS = []
 
     objects = UserManager()
+
+
+class Profile(models.Model):
+    user = models.OneToOneField('User', on_delete=models.CASCADE)
+    nickname = models.TextField(max_length=20, null=True, blank=True)
+    image = models.ImageField(upload_to="profile", default='profile/hodu.jpg')
