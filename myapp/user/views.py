@@ -1,9 +1,12 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.views import View
 from django.contrib.auth import authenticate, login, logout
 # from .models import User
 from .forms import RegisterForm, LoginForm
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.forms import PasswordChangeForm
+# from .models import Profile
 
 
 # 회원가입
@@ -63,3 +66,34 @@ class Logout(View):
     def get(self, request):
         logout(request)
         return redirect('blog:list')
+    
+
+class PasswordChange(LoginRequiredMixin, View):
+    def get(self, request):
+        form = PasswordChangeForm(request.user)
+        context = {
+            'form': form,
+        }
+        return render(request, 'user/pw_change.html', context)
+    
+    def post(self, request):
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            form.save()
+            # logout(request)
+            return redirect('user:login')
+
+        context = {
+            'form': form,
+        }
+        return render(request, 'user/pw_change.html', context)
+
+# class Profile(LoginRequiredMixin, View):
+#     def get(self, reuset, pk):
+#         user = User.objects.get(pk=pk)
+#         form = UserF
+#         return
+    
+#     def post(self, request, pk):
+
+#         return
